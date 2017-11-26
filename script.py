@@ -1,19 +1,24 @@
 import requests
 import csv
+from flask import Flask, make_response, send_file
 
-def get_url(url):
+app = Flask(__name__)
+
+
+
+@app.route("/")
+
+def Main_scrapper():
+
+    url         = "http://www.indiansuperleague.com/matchcentre/19963-kerala-blasters-fc-vs-atk"
     match_no = url.split('/')[4]
     match_no = match_no.split('-')[0]
     Request_URL = "http://www.indiansuperleague.com/sifeeds/repo/football/live/india_sl/json/{0}.json".format(match_no)
-    return Request_URL
 
-
-def Main_scrapper(url):
-    Request_URL = get_url(url)
     data        = requests.get(Request_URL)
     data        = data.json()
 
-    with open('Data.csv', 'w') as data_file:
+    with open('/tmp/Data.csv', 'w') as data_file:
         fieldnames = ['S No.', 'Season', 'Match', 'Date', 'Crowd', 'Venue', 'Team', 'Opponent', 'Result', 'Home/Away', 'Formation', 'GS', 'GA', 'GD', 'Poss.', 'Shots', 'SOT', 'Shot%', 'Pass', 'Pass%', 'PC', 'Intercept', 'Cross', 'FC', 'Offsides', 'Corners', 'YC', 'RC']
         writer = csv.DictWriter(data_file, fieldnames=fieldnames)
         writer.writeheader()
@@ -73,9 +78,8 @@ def Main_scrapper(url):
             writer.writerow(d)
 
     data_file.close()
+    return send_file('/tmp/Data.csv',as_attachment=True)
 
 
-
-
-
-Main_scrapper("http://www.indiansuperleague.com/matchcentre/19963-kerala-blasters-fc-vs-atk")
+if __name__ == "__main__":
+    app.run()
