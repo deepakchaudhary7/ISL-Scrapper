@@ -24,8 +24,6 @@ def Main_scrapper():
         match_no = url.split('/')[4]
         match_no = match_no.split('-')[0]
         Request_URL = "http://www.indiansuperleague.com/sifeeds/repo/football/live/india_sl/json/{0}.json".format(match_no)
-        print Request_URL
-        print "1"
         data        = requests.get(Request_URL)
         data        = data.json()
 
