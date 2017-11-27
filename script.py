@@ -15,7 +15,6 @@ def index():
 def Main_scrapper():
     if request.method == 'POST':
         return_data = request.form
-        print return_data
 
         for key, value in return_data.iteritems():
             Return_URL = value.encode('utf-8')
