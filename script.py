@@ -1,5 +1,8 @@
 import requests
 import csv
+from bs4 import BeautifulSoup
+from lxml import etree
+import urllib2
 from flask import Flask, make_response, send_file, render_template, request
 
 app = Flask(__name__)
@@ -160,7 +163,7 @@ def P2_Scrapper():
                         d['Starter/Bench'] = 'Starter'
                     else:
                         d['Starter/Bench'] = 'Bench'
-            
+
                     d['GS'] =   k[j]['events']['goals']
                     d['Assist'] =   k[j]['events']['assists']
                     d['Shots']  =   k[j]['events']['shots']
@@ -180,6 +183,123 @@ def P2_Scrapper():
 
         data_file.close()
         return send_file('/tmp/P2_Data.csv',as_attachment=True)
+
+
+
+@app.route('/ileague',methods = ['POST', 'GET'])
+def i_league_Scrapper():
+    if request.method == 'POST':
+        return_data = request.form
+
+        for key, value in return_data.iteritems():
+            Return_URL = value.encode('utf-8')
+
+    url = Return_URL
+    url = url.split('=')[1]
+    url = "https://administrator.the-aiff.com/view/fixture/"+str(url)
+    
+    # setting up the BeautifulSoup
+    content = urllib2.urlopen(url).read()
+    soup = BeautifulSoup(content,'html.parser')
+
+    # setting up the etree (lxml.html)
+    response = urllib2.urlopen(url) # html fetching
+    htmlparser = etree.HTMLParser()
+    tree = etree.parse(response, htmlparser)
+
+
+    home_team = tree.xpath('/html/body/div[1]/div[1]/div/span')[0].text.lstrip().encode('utf-8')
+    away_team = tree.xpath('/html/body/div[1]/div[3]/div/span')[0].text.lstrip().encode('utf-8')
+
+    home_team_score = tree.xpath('/html/body/div[1]/div[2]/div[4]/div[1]')[0].text.lstrip().encode('utf-8')
+    home_team_score = home_team_score.replace('\n',' ').rstrip()
+
+    away_team_score = tree.xpath('/html/body/div[1]/div[2]/div[4]/div[3]')[0].text.lstrip().encode('utf-8')
+    away_team_score = away_team_score.replace('\n',' ').rstrip()
+
+    tournament = tree.xpath('/html/body/div[1]/div[2]/div[1]')[0].text.lstrip().encode('utf-8')
+    tournament = tournament.replace('\n','').rstrip()
+
+    date = tree.xpath('/html/body/div[1]/div[2]/div[2]')[0].text.lstrip().encode('utf-8')
+    date = date.replace('\n',' ').rstrip().replace('  ','')
+
+
+
+    k = soup.find_all('table')
+
+
+    with open('/tmp/I-LEAGUE_Data.csv', 'w') as data_file:
+         fieldnames = ['Tournament', 'Date & Time', 'Home Team', 'Away Team', 'Home Goals', 'Away Goals', 'Team Name', 'Player Name', 'Jersey No.', 'Start/Bench', 'Goal Time', 'Sub Time', 'Yellow(True/False)', 'Red(True/False)']
+         writer = csv.DictWriter(data_file, fieldnames=fieldnames)
+         writer.writeheader()
+         d = {}
+         look_up = [8,10,9,11]
+
+         for i in look_up:
+             rows = k[i].find_all('tr')
+             for row in rows:
+                temp = row.find_all('td')
+                d['Tournament'] = tournament
+                d['Date & Time'] = date
+                d['Home Team'] = home_team
+                d['Away Team'] = away_team
+                d['Home Goals'] = home_team_score
+                d['Away Goals'] = away_team_score
+
+                if i==8 or i==10:
+                    d['Team Name'] = home_team
+                else:
+                    d['Team Name'] = away_team
+
+                if i==8 or i==9:
+                    d['Start/Bench'] = 'Start'
+                else:
+                    d['Start/Bench'] = 'Bench'
+
+                d['Player Name'] = temp[1].get_text().encode('utf-8')
+                d['Jersey No.'] = temp[0].get_text().encode('utf-8')
+
+                temp = temp[2].find_all('ul')
+
+
+                g_t = temp[0].find_all('li', class_="goal")
+                if(len(g_t)==0):
+                    G_T = None
+                else:
+                    G_T = g_t[0].get_text()
+
+
+                s_t = temp[0].find_all('li', class_='sub-out')
+                if(len(s_t)==0):
+                    s_t = temp[0].find_all('li', class_='sub-in')
+                    if(len(s_t)==0):
+                        S_T = None
+                    else:
+                        S_T = s_t[0].get_text()
+                else:
+                    S_T = s_t[0].get_text()
+
+
+                z = temp[0].find_all('li', class_='yellow')
+                if(len(z)==0):
+                    d['Yellow(True/False)'] = "False"
+                else:
+                    d['Yellow(True/False)'] = "True"
+
+                z = temp[0].find_all('li', class_='red')
+                if(len(z)==0):
+                    d['Red(True/False)'] = "False"
+                else:
+                    d['Red(True/False)'] = "True"
+
+                d['Goal Time'] = G_T
+                d['Sub Time'] = S_T
+
+                writer.writerow(d)
+
+    data_file.close()
+    return send_file('/tmp/I-LEAGUE_Data.csv',as_attachment=True)
+
 
 if __name__ == "__main__":
     app.run()
