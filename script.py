@@ -30,16 +30,25 @@ def P1_scrapper():
         data        = data.json()
 
         with open('/tmp/P1_Data.csv', 'w') as data_file:
-            fieldnames = ['S No.', 'Season', 'Match', 'Date', 'Crowd', 'Venue', 'Team', 'Opponent', 'Result', 'Home/Away', 'Formation', 'GS', 'GA', 'GD', 'Poss.', 'Shots', 'SOT', 'Shot%', 'Pass', 'Pass%', 'PC', 'Intercept', 'Cross', 'FC', 'Offsides', 'Corners', 'YC', 'RC']
+            fieldnames = ['S No.','match_stage', 'match_referee', 'lineman1', 'lineman2', 'fourth_official', 'support_staff', 'is_completed', 'is_shootout', 'Season', 'Match', 'Date', 'Crowd', 'Venue', 'Team', 'Opponent', 'Result', 'Player of the match', 'Home/Away', 'Formation', 'GS', 'GA', 'GD', 'Poss.', 'Shots', 'SOT', 'Shot%', 'Pass', 'Pass%', 'PC', 'Intercept', 'Cross', 'FC', 'Offsides', 'Corners', 'YC', 'RC']
             writer = csv.DictWriter(data_file, fieldnames=fieldnames)
             writer.writeheader()
 
             for i in range(0,2):
                 d = {}
                 d['S No.']      =   1
+                d['match_stage'] = data['match_detail']['match_stage']
+                d['match_referee'] = data['match_detail']['officials'][0]['name']
+                d['lineman1']   =   data['match_detail']['officials'][1]['name']
+                d['lineman2']   =   data['match_detail']['officials'][2]['name']
+                d['fourth_official'] = data['match_detail']['officials'][3]['name']
+                d['Player of the match'] = data['match_detail']['awards'][0]['name']
+                d['is_shootout'] = data['match_detail']['is_shootout']
+                d['is_completed'] = data['match_detail']['is_completed']
+                d['support_staff'] = data['teams'][i]['support_staff'][0]['name']
                 d['Season']     =   data['match_detail']['series']['name'].split(',')[1].split('"')[0].lstrip().rstrip()
-                d['Match']      =   data["teams"][0]["name"] + "v" + data['teams'][1]["name"]
-                d['Date']       =   data['match_detail']['date']
+                d['Match']      =   data["teams"][0]["name"] + " v " + data['teams'][1]["name"]
+                d['Date']       =   str(data['match_detail']['date'])+" "+str(data['match_detail']['start_time'])
                 d['Crowd']      =   data['match_detail']['attendance']
                 d['Venue']      =   data['match_detail']['venue']['name']
                 d['Team']       =   data['teams'][i]['name']
@@ -111,7 +120,7 @@ def P2_Scrapper():
 
 
         with open('/tmp/P2_Data.csv', 'w') as data_file:
-            fieldnames = ['S No', 'Season', 'Match', 'Date', 'Team', 'Opponent', 'Result', 'Home/Away', 'Formation', 'Team GS', 'Team GA', 'Player Name', 'Starter/Bench', 'GS', 'Assist', 'Shots', 'SOT', 'Pass', 'INT', 'Blocks', 'Tackles', 'YC', 'RC', 'FC', 'FS', 'Crosses', 'Offside']
+            fieldnames = ['S No', 'match_stage', 'match_referee', 'lineman1', 'lineman2', 'fourth_official', 'support_staff', 'is_completed', 'is_shootout', 'Season', 'Match', 'Date', 'Team', 'Opponent', 'Result', 'Player of the match', 'Home/Away', 'Formation', 'Team GS', 'Team GA', 'Player Name', 'position', 'Starter/Bench', 'minutes_played', 'GS', 'own_goals', 'key_passes', 'chances_created', 'is_second_yellow_card', 'corner_kicks', 'crosses', 'free_kicks', 'throw_in', 'punches', 'catches', 'penalty_kicks_total', 'penalty_kicks_goals', 'clearance', 'saves', 'take_on_total', 'take_on_successful', 'aerial_duel_total', 'aerial_duel_won', 'aerial_duel_lost', 'shots_faced', 'shots_on_goal_faced', 'goals_allowed', 'saves', 'penalty_kicks_shots_faced', 'penalty_kicks_goals_allowed', 'penalty_kicks_goals_saves', 'Assist', 'Shots', 'SOT', 'Pass', 'INT', 'Blocks', 'Tackles', 'YC', 'RC', 'FC', 'FS', 'Crosses', 'Offside']
             writer =   csv.DictWriter(data_file,fieldnames = fieldnames)
             writer.writeheader()
             count = 1
@@ -126,9 +135,51 @@ def P2_Scrapper():
                     d = {}
                     d['S No']      =   count
                     count+=1
+                    d['match_stage'] = data['match_detail']['match_stage']
+                    d['position'] = data['teams'][i]['players'][j]['position']
+                    d['minutes_played'] = data['teams'][i]['players'][j]['minutes_played']
+                    d['own_goals'] = data['teams'][i]['players'][j]['events']['own_goals']
+                    d['match_referee'] = data['match_detail']['officials'][0]['name']
+                    d['lineman1']   =   data['match_detail']['officials'][1]['name']
+                    d['lineman2']   =   data['match_detail']['officials'][2]['name']
+                    d['fourth_official'] = data['match_detail']['officials'][3]['name']
+                    d['Player of the match'] = data['match_detail']['awards'][0]['name']
+                    d['is_shootout'] = data['match_detail']['is_shootout']
+                    d['is_completed'] = data['match_detail']['is_completed']
+                    d['support_staff'] = data['teams'][i]['support_staff'][0]['name']
+                    d['key_passes'] = data['teams'][i]['players'][j]['events']["key_passes"]
+                    d['chances_created'] = data['teams'][i]['players'][j]['events']["chances_created"]
+                    d['is_second_yellow_card'] = data['teams'][i]['players'][j]['events']["is_second_yellow_card"]
+                    d['corner_kicks'] = data['teams'][i]['players'][j]['events']["corner_kicks"]
+                    d['crosses'] = data['teams'][i]['players'][j]['events']["crosses"]
+                    d['free_kicks'] = data['teams'][i]['players'][j]['events']["free_kicks"]
+                    d['throw_in'] = data['teams'][i]['players'][j]['events']["throw_in"]
+                    d['punches'] = data['teams'][i]['players'][j]['events']["punches"]
+                    d['catches'] = data['teams'][i]['players'][j]['events']["catches"]
+                    d['penalty_kicks_total'] = data['teams'][i]['players'][j]['events']["penalty_kicks"]["total"]
+                    d['penalty_kicks_goals'] = data['teams'][i]['players'][j]['events']["penalty_kicks"]["goals"]
+                    d['clearance'] = data['teams'][i]['players'][j]['touches']['clearance']
+                    d['saves'] = data['teams'][i]['players'][j]['touches']['saves']
+                    d['take_on_total'] = data['teams'][i]['players'][j]['touches']['take_on_total']
+                    d['take_on_successful'] = data['teams'][i]['players'][j]['touches']['take_on_successful']
+                    d['aerial_duel_total'] = data['teams'][i]['players'][j]['touches']['aerial_duel']['total']
+                    d['aerial_duel_won'] = data['teams'][i]['players'][j]['touches']['aerial_duel']['won']
+                    d['aerial_duel_lost'] = data['teams'][i]['players'][j]['touches']['aerial_duel']['lost']
+
+                    if(d['position']=='Goalkeeper'):
+                        d['shots_faced'] = data['teams'][i]['players'][j]['goaltenders']['shots_faced']
+                        d['shots_on_goal_faced'] = data['teams'][i]['players'][j]['goaltenders']['shots_on_goal_faced']
+                        d['goals_allowed'] = data['teams'][i]['players'][j]['goaltenders']['goals_allowed']
+                        d['saves'] = data['teams'][i]['players'][j]['goaltenders']['saves']
+                        d['penalty_kicks_shots_faced'] = data['teams'][i]['players'][j]['goaltenders']['shots_faced']
+                        d['penalty_kicks_goals_allowed'] = data['teams'][i]['players'][j]['goaltenders']['goals_allowed']
+                        d['penalty_kicks_goals_saves'] = data['teams'][i]['players'][j]['goaltenders']['saves']
+
+
+
                     d['Season']     =   data['match_detail']['series']['name'].split(',')[1].split('"')[0].lstrip().rstrip()
                     d['Match']      =   data["teams"][0]["name"] + "v" + data['teams'][1]["name"]
-                    d['Date']       =   data['match_detail']['date']
+                    d['Date']       =   str(data['match_detail']['date'])+" "+str(data['match_detail']['start_time'])
                     d['Team']       =   data['teams'][i]['name']
 
                     if(i==0):
@@ -197,7 +248,7 @@ def i_league_Scrapper():
     url = Return_URL
     url = url.split('=')[1]
     url = "https://administrator.the-aiff.com/view/fixture/"+str(url)
-    
+
     # setting up the BeautifulSoup
     content = urllib2.urlopen(url).read()
     soup = BeautifulSoup(content,'html.parser')
