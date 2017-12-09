@@ -179,7 +179,7 @@ def P2_Scrapper():
 
                     d['Season']     =   data['match_detail']['series']['name'].split(',')[1].split('"')[0].lstrip().rstrip()
                     d['Match']      =   data["teams"][0]["name"] + "v" + data['teams'][1]["name"]
-                    #d['Date']       =   str(data['match_detail']['date'])+" "+str(data['match_detail']['start_time'])
+                    d['Date']       =   str(data['match_detail']['date'])+" "+str(data['match_detail']['start_time'])
                     d['Team']       =   data['teams'][i]['name'].encode('utf-8')
 
                     if(i==0):
