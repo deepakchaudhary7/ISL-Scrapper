@@ -237,6 +237,81 @@ def P2_Scrapper():
 
 
 
+@app.route('/p3',methods = ['POST', 'GET'])
+def P3_Scrapper():
+    if request.method == 'POST':
+        return_data = request.form
+
+        for key, value in return_data.iteritems():
+            Return_URL = value.encode('utf-8')
+
+
+        url         = Return_URL
+        match_no    = url.split('/')[4]
+        match_no    = match_no.split('-')[0]
+        Request_URL = "http://www.indiansuperleague.com/sifeeds/repo/football/live/india_sl/json/{0}.json".format(match_no)
+        data        = requests.get(Request_URL)
+        data        = data.json()
+
+        with open('/tmp/P3_Data.csv', 'w') as data_file:
+            fieldnames = ['S No', 'team_name', 'match_stage', 'match_referee', 'lineman1', 'lineman2', 'fourth_official', 'is_completed', 'is_shootout', 'Season', 'Match', 'Date', 'Player of the match', 'event_name', 'event_text', 'time', 'player_in', 'player_out', 'goal_scorer', 'assisting_player', 'ball_coordinates']
+            writer =   csv.DictWriter(data_file,fieldnames = fieldnames)
+            writer.writeheader()
+
+            count = 1
+            length = len(data['events'])
+
+            d = {}
+
+            for i in range(0,length):
+                if(data['events'][i]['event']!='Goal' and data['events'][i]['event']!='Substitution'):
+                    continue
+
+                d = {}
+                d['S No'] = count
+                count+=1
+                d['match_stage'] = data['match_detail']['match_stage']
+                d['match_referee'] = data['match_detail']['officials'][0]['name']
+                d['lineman1']   =   data['match_detail']['officials'][1]['name']
+                d['lineman2']   =   data['match_detail']['officials'][2]['name']
+                d['fourth_official'] = data['match_detail']['officials'][3]['name']
+                d['Player of the match'] = data['match_detail']['awards'][0]['name']
+                d['is_shootout'] = data['match_detail']['is_shootout']
+                d['is_completed'] = data['match_detail']['is_completed']
+                d['Season']     =   data['match_detail']['series']['name'].split(',')[1].split('"')[0].lstrip().rstrip()
+                d['Match']      =   data["teams"][0]["name"] + "v" + data['teams'][1]["name"]
+                d['Date']       =   str(data['match_detail']['date'])+" "+str(data['match_detail']['start_time'])
+                d['team_name']       =   data['events'][i]['team_name']
+
+                d['event_name'] = data['events'][i]['event']
+                d['event_text'] = data['events'][i]['event_text']
+                if(data['events'][i]['time']['additional_minutes']==0):
+                    d['time'] = str(data['events'][i]['time']['minutes']) + ":" + str(data['events'][i]['time']['seconds'])
+                else:
+                    d['time'] = str(data['events'][i]['time']['minutes']) + "+" + str(data['events'][i]['time']['additional_minutes'])
+
+                if(d['event_name']=='Substitution'):
+                    d['player_in'] = data['events'][i]['substitution']['player_in']['player_name']
+                    d['player_out'] = data['events'][i]['substitution']['player_out']['player_name']
+
+                elif(d['event_name']=='Goal'):
+                    d['goal_scorer'] = data['events'][i]['offensive_player']['player_name']
+                    try:
+                        d['assisting_player'] = data['events'][i]['assisting_player']['player_name']
+                    except:
+                        pass
+
+                    try:
+                        d['ball_coordinates'] = "x = " + str(data['events'][i]['ball_coordinates']['x']) + ",y = " + str(data['events'][i]['ball_coordinates']['x'])
+                    except:
+                        pass
+
+                writer.writerow(d)
+
+        data_file.close()
+        return send_file('/tmp/P3_Data.csv',as_attachment=True)
+
+
 @app.route('/ileague',methods = ['POST', 'GET'])
 def i_league_Scrapper():
     if request.method == 'POST':
@@ -350,6 +425,7 @@ def i_league_Scrapper():
 
     data_file.close()
     return send_file('/tmp/I-LEAGUE_Data.csv',as_attachment=True)
+
 
 
 if __name__ == "__main__":

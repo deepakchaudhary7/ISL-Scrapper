@@ -2,7 +2,7 @@
 <html lang="en" >
 <head>
   <meta charset="UTF-8">
-  <title>ISL Scrapper [Pure CSS]</title>
+  <title>ISL Scrapper</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Antic'>
@@ -21,7 +21,6 @@
   <div class="text">ISL Scrapper</div>
   <br>
   <br>
-  <br>
   <form action = "https://isl-data.herokuapp.com/p1" method = "POST">
     <input type="text"  class="button" placeholder="P1 DATA FROM HERE" name="url"/><br><br>
     <input type="submit" class="btn btn-primary btn-lg" value="GET P1 DATA"/>
@@ -32,10 +31,16 @@
     <input type="submit" class="btn btn-primary btn-lg" value="GET P2 DATA"/>
   </form>
   <br><br>
+  <form  action = "https://isl-data.herokuapp.com/p3" method="POST">
+    <input  type="text" class = "button" placeholder="P3 DATA FROM HERE" name = "p2_url"><br><br>
+    <input type="submit" class="btn btn-primary btn-lg" value="GET P3 DATA DATA"/>
+  </form>
+  <br><br>
   <form  action = "https://isl-data.herokuapp.com/ileague" method="POST">
     <input  type="text" class = "button" placeholder="I-LEAGUE DATA FROM HERE" name = "p2_url"><br><br>
     <input type="submit" class="btn btn-primary btn-lg" value="GET I-LEAGUE DATA"/>
   </form>
+
 
   </form>
   <script src='https://use.edgefonts.net/amaranth.js'></script>
@@ -43,3 +48,4 @@
 
 </body>
 </html>
+<!-- https://isl-data.herokuapp.com -->
