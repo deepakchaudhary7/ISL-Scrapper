@@ -37,16 +37,22 @@ def P1_scrapper():
             for i in range(0,2):
                 d = {}
                 d['S No.']      =   1
-                d['match_stage'] = data['match_detail']['match_stage']
-                d['match_referee'] = data['match_detail']['officials'][0]['name'].encode('utf-8')
-                d['lineman1']   =   data['match_detail']['officials'][1]['name'].encode('utf-8')
-                d['lineman2']   =   data['match_detail']['officials'][2]['name'].encode('utf-8')
-                d['fourth_official'] = data['match_detail']['officials'][3]['name'].encode('utf-8')
-                d['Player of the match'] = data['match_detail']['awards'][0]['name'].encode('utf-8')
-                d['is_shootout'] = data['match_detail']['is_shootout']
-                d['is_completed'] = data['match_detail']['is_completed']
-                d['support_staff'] = data['teams'][i]['support_staff'][0]['name'].encode('utf-8')
-                d['Season']     =   data['match_detail']['series']['name'].split(',')[1].split('"')[0].lstrip().rstrip()
+
+                try:
+                    d['match_stage'] = data['match_detail']['match_stage']
+                    d['match_referee'] = data['match_detail']['officials'][0]['name'].encode('utf-8')
+                    d['lineman1']   =   data['match_detail']['officials'][1]['name'].encode('utf-8')
+                    d['lineman2']   =   data['match_detail']['officials'][2]['name'].encode('utf-8')
+                    d['fourth_official'] = data['match_detail']['officials'][3]['name'].encode('utf-8')
+                    d['Player of the match'] = data['match_detail']['awards'][0]['name'].encode('utf-8')
+                    d['is_shootout'] = data['match_detail']['is_shootout']
+                    d['is_completed'] = data['match_detail']['is_completed']
+                    d['support_staff'] = data['teams'][i]['support_staff'][0]['name'].encode('utf-8')
+                    d['Season']     =   data['match_detail']['series']['name'].split(',')[1].split('"')[0].lstrip().rstrip()
+
+                except:
+                    pass
+
                 d['Match']      =   data["teams"][0]["name"] + " v " + data['teams'][1]["name"]
                 d['Date']       =   str(data['match_detail']['date'])+" "+str(data['match_detail']['start_time'])
                 d['Crowd']      =   data['match_detail']['attendance']
@@ -135,18 +141,24 @@ def P2_Scrapper():
                     d = {}
                     d['S No']      =   count
                     count+=1
-                    d['match_stage'] = data['match_detail']['match_stage']
-                    d['position'] = data['teams'][i]['players'][j]['position']
-                    d['minutes_played'] = data['teams'][i]['players'][j]['minutes_played']
-                    d['own_goals'] = data['teams'][i]['players'][j]['events']['own_goals']
-                    d['match_referee'] = data['match_detail']['officials'][0]['name'].encode('utf-8')
-                    d['lineman1']   =   data['match_detail']['officials'][1]['name'].encode('utf-8')
-                    d['lineman2']   =   data['match_detail']['officials'][2]['name'].encode('utf-8')
-                    d['fourth_official'] = data['match_detail']['officials'][3]['name'].encode('utf-8')
-                    d['Player of the match'] = data['match_detail']['awards'][0]['name'].encode('utf-8')
-                    d['is_shootout'] = data['match_detail']['is_shootout']
-                    d['is_completed'] = data['match_detail']['is_completed']
-                    d['support_staff'] = data['teams'][i]['support_staff'][0]['name'].encode('utf-8')
+
+                    try:
+                        d['match_stage'] = data['match_detail']['match_stage']
+                        d['position'] = data['teams'][i]['players'][j]['position']
+                        d['minutes_played'] = data['teams'][i]['players'][j]['minutes_played']
+                        d['own_goals'] = data['teams'][i]['players'][j]['events']['own_goals']
+                        d['match_referee'] = data['match_detail']['officials'][0]['name'].encode('utf-8')
+                        d['lineman1']   =   data['match_detail']['officials'][1]['name'].encode('utf-8')
+                        d['lineman2']   =   data['match_detail']['officials'][2]['name'].encode('utf-8')
+                        d['fourth_official'] = data['match_detail']['officials'][3]['name'].encode('utf-8')
+                        d['Player of the match'] = data['match_detail']['awards'][0]['name'].encode('utf-8')
+                        d['is_shootout'] = data['match_detail']['is_shootout']
+                        d['is_completed'] = data['match_detail']['is_completed']
+                        d['support_staff'] = data['teams'][i]['support_staff'][0]['name'].encode('utf-8')
+
+                    except:
+                        pass
+
                     d['key_passes'] = data['teams'][i]['players'][j]['events']["key_passes"]
                     d['chances_created'] = data['teams'][i]['players'][j]['events']["chances_created"]
                     d['is_second_yellow_card'] = data['teams'][i]['players'][j]['events']["is_second_yellow_card"]
@@ -270,14 +282,20 @@ def P3_Scrapper():
                 d = {}
                 d['S No'] = count
                 count+=1
-                d['match_stage'] = data['match_detail']['match_stage']
-                d['match_referee'] = data['match_detail']['officials'][0]['name'].encode('utf-8')
-                d['lineman1']   =   data['match_detail']['officials'][1]['name'].encode('utf-8')
-                d['lineman2']   =   data['match_detail']['officials'][2]['name'].encode('utf-8')
-                d['fourth_official'] = data['match_detail']['officials'][3]['name'].encode('utf-8')
-                d['Player of the match'] = data['match_detail']['awards'][0]['name'].encode('utf-8')
-                d['is_shootout'] = data['match_detail']['is_shootout']
-                d['is_completed'] = data['match_detail']['is_completed']
+
+                try:
+                    d['match_stage'] = data['match_detail']['match_stage']
+                    d['match_referee'] = data['match_detail']['officials'][0]['name'].encode('utf-8')
+                    d['lineman1']   =   data['match_detail']['officials'][1]['name'].encode('utf-8')
+                    d['lineman2']   =   data['match_detail']['officials'][2]['name'].encode('utf-8')
+                    d['fourth_official'] = data['match_detail']['officials'][3]['name'].encode('utf-8')
+                    d['Player of the match'] = data['match_detail']['awards'][0]['name'].encode('utf-8')
+                    d['is_shootout'] = data['match_detail']['is_shootout']
+                    d['is_completed'] = data['match_detail']['is_completed']
+
+                except:
+                    pass
+
                 d['Season']     =   data['match_detail']['series']['name'].split(',')[1].split('"')[0].lstrip().rstrip()
                 d['Match']      =   data["teams"][0]["name"] + "v" + data['teams'][1]["name"]
                 d['Date']       =   str(data['match_detail']['date'])+" "+str(data['match_detail']['start_time'])
